@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Vidly.Models;
+using Vidly.ViewModels;
 
 namespace Vidly.Controllers
 {
@@ -27,11 +28,22 @@ namespace Vidly.Controllers
 
             */
             var movie = new Movie() { Name = "Shrek!" };
+            // ViewData["Movie"] = movie;  // Ogni controller ha una proprietàchiamata ViewData che è di tipo ViewDataDictionary
 
-            ViewData["Movie"] = movie;  // Ogni controller ha una proprietàchiamata ViewData che è di tipo ViewDataDictionary
-            // return View(movie);  // E' un helper method ereditato dalla classe base Controller. Questo metodo permette inoltre di creare facilmente una ViewResult. Alla View viene passato un Model (movie in questo caso) come parametro
-            return View();
+            var customers = new List<Customer>
+            {
+                new Customer { Name = "Customer 1" },
+                new Customer { Name = "Customer 2" }
+            };
 
+            var viewModel = new RandomMovieViewModel
+            {
+                Movie = movie,
+                Customers = customers
+            };
+
+            //return View(movie);  // E' un helper method ereditato dalla classe base Controller. Questo metodo permette inoltre di creare facilmente una ViewResult. Alla View viene passato un Model (movie in questo caso) come parametro
+            return View(viewModel); 
         } 
 
 
