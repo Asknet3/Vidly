@@ -8,20 +8,25 @@
     var className = Model.Customers.Count > 0 ? "popular" : null;
 }
 
-<h2 class="@className">@Model.Movie.First().Name</h2>
-
-@if (Model.Customers.Count == 0)
+@if (Model.Movie.Count == 0)
 {
-    <text>Nessuno ha noleggiato questo movie.</text>
+    <br /><br /><text>Nessun Movie trovato</text>
 }
 else
 {
-    <ul>
-        @foreach (var customer in Model.Customers)
-        {
-            <li>@customer.Name</li>
-        }
-    </ul>
+    <h2 class="@className">@Model.Movie.First().Name</h2>
+
+    if (Model.Customers.Count == 0)
+    {
+        <text>Nessuno ha noleggiato questo movie.</text>
+    }
+    else
+    {
+        <ul>
+            @foreach (var customer in Model.Customers)
+            {
+                <li>@customer.Name</li>
+            }
+        </ul>
+    }
 }
-
-
