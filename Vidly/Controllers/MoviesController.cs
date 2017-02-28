@@ -60,15 +60,64 @@ namespace Vidly.Controllers
 
             //return View(movie);  // E' un helper method ereditato dalla classe base Controller. Questo metodo permette inoltre di creare facilmente una ViewResult. Alla View viene passato un Model (movie in questo caso) come parametro
             return View(viewModel); 
-        } 
+        }
 
+
+
+
+        public ActionResult New ()
+        {
+            var genres = _context.Genres.ToList();  // Recupero la lista di generi
+            var viewModel = new MovieFormViewModel
+            {
+                Genres = genres
+            };
+
+            return View("MovieForm", viewModel);
+        }
+
+
+        [HttpPost]
+        public ActionResult Save(Movie movie)
+        {
+            if (movie.Id == 0)  // E' un nuovo Movie. Lo aggiungo al DB
+            {
+                movie.DateAdded = DateTime.Now;
+                _context.Movies.Add(movie);
+            }
+            else
+            {
+                var movieInDb = _context.Movies.Single(m => m.Id == movie.Id);  // Recupero il Movie dal DB
+
+                //Aggiorno i campi:
+                movieInDb.Name = movie.Name;
+                movieInDb.NumberInStock = movie.NumberInStock;
+                movieInDb.ReleaseDate = movie.ReleaseDate;
+                movieInDb.Genre = movie.Genre;
+
+                _context.SaveChanges();
+            }
+            return RedirectToAction("Index", "Movies");
+        }
 
 
 
         public ActionResult Edit(int id)
         {
-            return Content("id=" + id);
+            var movie = _context.Movies.SingleOrDefault(m => m.Id == id);
+
+            if (movie == null)
+                return HttpNotFound(); // Se il Movie con quell'Id non esiste, restituisce un 404
+
+            var viewModel = new MovieFormViewModel
+            {
+                Movie = movie,
+                Genres = _context.Genres.ToList()
+            };
+
+            return View("MovieForm", viewModel);
         }
+
 
 
 
