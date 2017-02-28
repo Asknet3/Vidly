@@ -8,6 +8,6 @@ namespace Vidly.ViewModels
 {
     public class IndexCustomerViewModel
     {
-        public List<Customer> Customers { get; set; }
+        public IEnumerable<Customer> Customers { get; set; }
     }
 }

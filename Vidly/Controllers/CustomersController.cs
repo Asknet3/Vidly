@@ -15,8 +15,6 @@ namespace Vidly.Controllers
         // GET: Customers
         public ActionResult Index()
         {
-            /* L'oggetto "customers" verrà quindi passato alla view result.
-               Creo quindi un'istanza dell'oggetto view model */
             var viewModel = new IndexCustomerViewModel
             {
                 Customers = GetCustomers() // Inizializzo la proprietà Customers della ViewModel passandogli la lista di customers
@@ -40,12 +38,12 @@ namespace Vidly.Controllers
 
 
         // Get All Customers
-        private List<Customer> GetCustomers()
+        private IEnumerable<Customer> GetCustomers()
         {
             return new List<Customer>
             {
-                new Customer { Id=0, Name = "Customer 1" },
-                new Customer { Id=1, Name = "Customer 2" },
+                new Customer { Id=0, Name = "John Smith" },
+                new Customer { Id=1, Name = "Mary Williams" },
                 new Customer { Id=2, Name = "Customer 3" },
                 new Customer { Id=3, Name = "Customer 4" },
                 new Customer { Id=4, Name = "Customer 5" }
@@ -57,7 +55,7 @@ namespace Vidly.Controllers
         // Get Customer by Id
         private Customer GetCustomer(int Id)
         {
-            List<Customer> allCustomers = GetCustomers();
+            IEnumerable<Customer> allCustomers = GetCustomers();
 
             foreach (Customer customer in allCustomers)
             {
