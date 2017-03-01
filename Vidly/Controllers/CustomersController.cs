@@ -48,6 +48,7 @@ namespace Vidly.Controllers
             var membershipTypes = _context.MembershipTypes.ToList();
             var viewModel = new CustomerFormViewModel
             {
+                Customer = new Customer(),
                 MembershipTypes = membershipTypes
             };
 
@@ -57,8 +58,25 @@ namespace Vidly.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(Customer customer)
         {
+            /* Usando EntityFramework, capita spesso di usare delle Data Annotations (es. [Required] oppure [StringLength(255)])
+             * come attributi nel Model. Questi andranno ad agire creando i campi nel DB con le appropriate regole definite.
+             * Per rispettare tali regole, è bene usare delle Validazioni direttamente nelle Form e questo si fa usando i ModelState
+             * come di seguito
+            */        
+            if(!ModelState.IsValid)   // Il ModelState non è valido, restituisco la stessa View.
+            {
+                var viewModel = new CustomerFormViewModel
+                {
+                    Customer = customer,
+                    MembershipTypes = _context.MembershipTypes.ToList()
+                };
+
+                return View("CustomerForm", viewModel);
+            }
+
             if(customer.Id == 0)
                 _context.Customers.Add(customer);
             else

@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Vidly.Models;
 using Vidly.ViewModels;
 using System.Data.Entity;
+using System.Data.Entity.Validation;
 
 namespace Vidly.Controllers
 {
@@ -70,6 +71,7 @@ namespace Vidly.Controllers
             var genres = _context.Genres.ToList();  // Recupero la lista di generi
             var viewModel = new MovieFormViewModel
             {
+                Movie = new Movie(),  // Questa riga è fondamentale per evitare di avere errori di validazione nella creazione di un nuovo Movie
                 Genres = genres
             };
 
@@ -78,8 +80,21 @@ namespace Vidly.Controllers
 
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(Movie movie)
         {
+            if(!ModelState.IsValid)
+            {
+                var viewModel = new MovieFormViewModel
+                {
+                    Movie = movie,
+                    Genres = _context.Genres.ToList()
+                };
+
+                return View("MovieForm", viewModel);
+            }
+                
+
             if (movie.Id == 0)  // E' un nuovo Movie. Lo aggiungo al DB
             {
                 movie.DateAdded = DateTime.Now;
@@ -93,10 +108,11 @@ namespace Vidly.Controllers
                 movieInDb.Name = movie.Name;
                 movieInDb.NumberInStock = movie.NumberInStock;
                 movieInDb.ReleaseDate = movie.ReleaseDate;
-                movieInDb.Genre = movie.Genre;
-
-                _context.SaveChanges();
+                movieInDb.GenreId = movie.GenreId;
             }
+
+            _context.SaveChanges();
+
             return RedirectToAction("Index", "Movies");
         }
 
