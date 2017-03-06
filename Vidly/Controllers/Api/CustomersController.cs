@@ -23,9 +23,9 @@ namespace Vidly.Controllers.Api
 
 
         // GET /api/customers
-        public IEnumerable<CustomerDto> GetCustomers()  // Restituisce una lista di Customers
+        public IHttpActionResult GetCustomers()  // Restituisce una lista di Customers
         {
-            return _context.Customers.ToList().Select(Mapper.Map<Customer, CustomerDto>);
+            return Ok(_context.Customers.ToList().Select(Mapper.Map<Customer, CustomerDto>));
         }
 
 
@@ -47,7 +47,7 @@ namespace Vidly.Controllers.Api
 
         // POST  /api/customers
         [HttpPost]
-        public IHttpActionResult CreateCustomer (CustomerDto customerDto)  // Creo un Customer.Volendo, avrei potuto chiamare il metodo PostCustomer (invece di CreateCustomer). 
+        public IHttpActionResult CreateCustomer (CustomerDto customerDto)  // Creo un Customer. Volendo, avrei potuto chiamare il metodo PostCustomer (invece di CreateCustomer). 
         {                                                   // PostCustomer è un nome usato da Microsoft per convenzione, e nel caso usassimo questo, non servirebbe definire l'attributo [HttpPost] al metodo
             if (!ModelState.IsValid)
                 return BadRequest();
