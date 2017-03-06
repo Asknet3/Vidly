@@ -1,9 +1,11 @@
-﻿using System;
+﻿using AutoMapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using Vidly.Dtos;
 using Vidly.Models;
 
 namespace Vidly.Controllers.Api
@@ -18,43 +20,54 @@ namespace Vidly.Controllers.Api
         }
 
 
+
+
         // GET /api/customers
-        public IEnumerable<Customer> GetCustomers()
+        public IEnumerable<CustomerDto> GetCustomers()  // Restituisce una lista di Customers
         {
-            return _context.Customers.ToList();
+            return _context.Customers.ToList().Select(Mapper.Map<Customer, CustomerDto>);
         }
 
 
+
+
         // GET /api/customers/1
-        public Customer GetCustomer(int id)
+        public IHttpActionResult GetCustomer(int id)  // Restituisce un singolo Customer
         {
             var customer = _context.Customers.SingleOrDefault(c => c.Id == id);
 
             if (customer == null)
-                throw new HttpResponseException(HttpStatusCode.NotFound);  // E' una convenzione RESTfull:  Se la risorsa non viene trovata, viene restituita la response standard NOT FOUND
+                return NotFound();  // E' una convenzione RESTfull:  Se la risorsa non viene trovata, viene restituita la response standard NOT FOUND
 
-            return customer;
+            return Ok(Mapper.Map<Customer, CustomerDto>(customer));
         }
 
         
+
+
         // POST  /api/customers
         [HttpPost]
-        public Customer CreateCustomer (Customer customer)
-        {
+        public IHttpActionResult CreateCustomer (CustomerDto customerDto)  // Creo un Customer.Volendo, avrei potuto chiamare il metodo PostCustomer (invece di CreateCustomer). 
+        {                                                   // PostCustomer è un nome usato da Microsoft per convenzione, e nel caso usassimo questo, non servirebbe definire l'attributo [HttpPost] al metodo
             if (!ModelState.IsValid)
-                throw new HttpResponseException(HttpStatusCode.BadRequest);
+                return BadRequest();
+
+            var customer = Mapper.Map<CustomerDto, Customer>(customerDto);
 
             _context.Customers.Add(customer);
-
             _context.SaveChanges();
 
-            return customer;
+            customerDto.Id = customer.Id;
+
+            return Created(new Uri(Request.RequestUri + "/" + customer.Id),customerDto);
         }
 
 
+
+
         // PUT /api/customers/1
-        [System.Web.Http.HttpPut]
-        public void UpdateCustomer(int id, Customer customer)
+        [HttpPut]
+        public void UpdateCustomer(int id, CustomerDto CustomerDto)  // Aggiorno un Customer
         {
             if (!ModelState.IsValid)
                 throw new HttpResponseException(HttpStatusCode.BadRequest);
@@ -64,19 +77,24 @@ namespace Vidly.Controllers.Api
             if (customerInDb == null)
                 throw new HttpResponseException(HttpStatusCode.NotFound);
 
-            customerInDb.Name = customer.Name;
-            customerInDb.BirthDate = customer.BirthDate;
-            customerInDb.IsSubscribedToNewsletter = customer.IsSubscribedToNewsletter;
-            customerInDb.MembershipTypeId= customer.MembershipTypeId;
+
+            Mapper.Map(CustomerDto, customerInDb);
+
+            //customerInDb.Name = CustomerDto.Name;
+            //customerInDb.BirthDate = CustomerDto.BirthDate;
+            //customerInDb.IsSubscribedToNewsletter = CustomerDto.IsSubscribedToNewsletter;
+            //customerInDb.MembershipTypeId= CustomerDto.MembershipTypeId;
 
             _context.SaveChanges();
 
         }
 
 
+
+
         // DELETE /api/customers/1
         [HttpDelete]
-        public void DeleteCustomer(int id)
+        public void DeleteCustomer(int id) // Cancellazione di un Customer
         {
             var customerInDb = _context.Customers.SingleOrDefault(c => c.Id == id);
 
