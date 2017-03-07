@@ -166,8 +166,12 @@ namespace Vidly.Controllers
         
         public ViewResult Index()
         {
+            /* commento la valorizzazione della lista di movies perchè adesso è stata implementata lato client con una chiamata ajax alla relativa WebApi
             var movies = _context.Movies.Include(m => m.Genre).ToList();
             return View(movies);
+            */
+
+            return View();
         }
 
 

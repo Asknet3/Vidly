@@ -116,12 +116,19 @@ namespace Vidly.Controllers
 
         public ViewResult Index()
         {
+            /* commento la valorizzazione della lista di customers perchè adesso è stata implementata lato client con una chiamata ajax alla relativa WebApi
+             * 
             // Inizializzo la variabile customers prendendo i dati dal DB
             var customers = _context.Customers.Include(c => c.MembershipType).ToList();  // E.F. carica solo gli oggetti customer e non quelli collegati (es. MembershipType). 
                                                                                          // Per questo motivo è necessario  caricare i customers e i relativi membershiptypes 
                                                                                          // assieme (il cosiddetto Eager Loading)
 
             return View(customers); // Verificare sempre che nella View sia definito il model corretto. (In questo caso verificare nella View Index.cshtml)
+            */
+
+            return View();
+
+
         }
 
 
